@@ -3,26 +3,22 @@
 
 ```js
 
+import * as Yup from 'yup';
 
-export const createFinanceLeadSchema = yup.object().shape(
-  {
-    name: yup.string().required(required),
-    companyName: yup.object().when('personTypeIsPF', {
-      is: false,
-      then: yup.string().required(required),
+const schema = Yup.object().shape({
+  phone: Yup.string()
+    .when('email', {
+      is: val => val && val.length > 0,  // if email is filled in
+      then: Yup.string().notRequired(),  // phone number is not required
+      otherwise: Yup.string().required('The phone number is required'), 
     }),
-    email: yup
-      .string()
-      .email('E-mail inválido')
-      .required(required)
-      .oneOf(['email', 'phone'], 'Preencha pelo menos um campo'),
-    phone: yup
-      .string()
-      .matches(phoneRegExp, 'Telefone inválido')
-      .required(required)
-      .oneOf(['email', 'phone'], 'Preencha pelo menos um campo'),
-  },
-  [['email', 'phone']],
-)
+  email: Yup.string()
+    .when('phone', {
+      is: val => val && val.length > 0, // if phone is filled in
+      then: Yup.string().notRequired(), // email is not required
+      otherwise: Yup.string().required('The email is required'),
+    }),
+});
+
 
 ```
